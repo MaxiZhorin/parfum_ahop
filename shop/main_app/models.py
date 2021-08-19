@@ -6,6 +6,23 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 User = get_user_model()
 
 
+class LatestProductManager:
+
+    @staticmethod
+    def get_products_for_main_page(*args, **kwargs):
+        products = []
+        ct_models = ContentType.objects.filter(model__in=args)
+        for ct_model in ct_models:
+            model_products = ct_model.model_class()._base_manager.all().order_by('-id')[:10]
+            products.extend(model_products)
+        return products
+
+
+class LatestProducts:
+
+    objects = LatestProductManager()
+
+
 class Category(models.Model):
 
     name = models.CharField(max_length=255, verbose_name='Имя категории')
@@ -15,15 +32,33 @@ class Category(models.Model):
         return self.name
 
 
+class CategorySex(models.Model):
+
+    name = models.CharField(max_length=255, verbose_name='Пол духов')
+    slug = models.SlugField(unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class ParfumVolume(models.Model):
+
+    name = models.CharField(max_length=255, verbose_name='Объем')
+    slug = models.SlugField(unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Product(models.Model):
 
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
-    title = models.CharField(max_length=255, verbose_name='Наименование')
-    article = models.CharField(max_length=100, blank=True, null=True, default=None)
-    slug = models.SlugField(unique=True)
+    brand = models.CharField(max_length=255, verbose_name='Бренд', blank=True)
+    title = models.CharField(max_length=255, verbose_name='Название')
+    article = models.CharField(max_length=100, blank=True, null=True, default=None, unique=True)
     image = models.ImageField(verbose_name='Изображение')
     description = models.TextField(verbose_name='Описание', null=True)
-    old_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Старая цена')
+    old_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Старая цена', null=True)
     price_opt = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Оптовая цена')
     price_retail = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Розничная цена')
     is_active = models.BooleanField(default=True)
@@ -73,7 +108,8 @@ class Customer(models.Model):
 
 
 class Parfum(Product):
-    sex = models.CharField(max_length=20, verbose_name='Пол', blank=True)
+    sex = models.ForeignKey(CategorySex, verbose_name='Пол', on_delete=models.CASCADE)
+    volume = models.ForeignKey(ParfumVolume, verbose_name='Объем флакона', on_delete=models.CASCADE)
     type_aroma = models.CharField(max_length=255, verbose_name='Тип аромата', blank=True)
     first_note = models.CharField(max_length=20, verbose_name='Начальная нота', blank=True)
     last_note = models.CharField(max_length=20, verbose_name='Конечная нота', blank=True)
