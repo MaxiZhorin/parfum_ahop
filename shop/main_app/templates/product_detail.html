@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row justify-content-md-center mt-2">
+    <div class="col col-lg-5">
+      <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'base' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="#">{{ product.category.name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.brand }}</li>
+    </ol>
+</nav>
+    </div>
+
+<div class="row mt-2 justify-content-md-center">
+    <div class="col-md-4">
+        <img src=" {{product.image.url }}" class="img-fluid">
+    </div>
+    <div class="col-md-4">
+        <div class="blog-post">
+
+            <h3 class="blog-post-title">{{ product.title }}</h3>
+            <h4 class="card-title pricing-card-title">{{ product.price_retail }} &#8381;</h4>
+            <!--            <p>{{ product.description|linebreaksbr }}</p>-->
+            <!--            <hr>-->
+            <p><b>Пол: </b>{{ product.sex }}</p>
+            <p><b>Тип аромата: </b>{{ product.type_aroma }}</p>
+            <p><b>Начальная нота: </b>{{ product.first_note }}</p>
+            <p><b>Конечная нота: </b>{{ product.last_note }}</p>
+
+        </div><!-- /.blog-post -->
+
+
+    </div>
+</div>
+
+<div class="row mt-5 justify-content-md-center">
+    <div class="col col-lg-12">
+        <h3> Описание {{ product.title }}</h3>
+        <p>{{ product.description|linebreaksbr }}</p>
+        <hr>
+
+
+    </div>
+</div>
+
+
+
+
+{% endblock content %}
